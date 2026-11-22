@@ -4,15 +4,32 @@ import fs from 'fs';
 import { fileURLToPath } from 'url';
 import { createServer as createViteServer } from 'vite';
 import { SERVICES_DATA, INITIAL_USER_REQUESTS, INITIAL_COURIERS } from './src/data/mockData.ts';
+import {
+  buildRobotsTxt,
+  buildSitemapXml,
+  getBaseUrl,
+  getCanonicalRedirect,
+  injectSeoIntoHtml,
+  isPrivateOrAdminRequest
+} from './src/seo/serverRenderer.ts';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
+app.set('trust proxy', 1);
 const PORT = process.env.PORT || 3000;
 const DATA_FILE = path.join(__dirname, 'data_store.json');
 
 app.use(express.json());
+
+// Prevent indexing of admin, auth, API, and private customer routes
+app.use((req, res, next) => {
+  if (isPrivateOrAdminRequest(req)) {
+    res.setHeader('X-Robots-Tag', 'noindex, nofollow, noarchive');
+  }
+  next();
+});
 
 // Persistent store structure
 interface StoreData {
@@ -356,6 +373,38 @@ app.put('/api/settings', (req, res) => {
   res.json(store.adminSettings);
 });
 
+// ==================== SEO ENDPOINTS ====================
+
+app.get('/robots.txt', (req, res) => {
+  const baseUrl = getBaseUrl(req);
+  res.type('text/plain; charset=utf-8').send(buildRobotsTxt(baseUrl));
+});
+
+app.get('/sitemap.xml', (req, res) => {
+  const baseUrl = getBaseUrl(req);
+  res.setHeader('Cache-Control', 'public, max-age=3600');
+  res.type('application/xml; charset=utf-8').send(buildSitemapXml(baseUrl, store.services));
+});
+
+function isHtmlPageNavigation(req: express.Request): boolean {
+  if (req.method !== 'GET') return false;
+  const pathUrl = req.path || '/';
+  if (
+    pathUrl.startsWith('/api/') ||
+    pathUrl.startsWith('/assets/') ||
+    pathUrl.startsWith('/src/') ||
+    pathUrl.startsWith('/@') ||
+    pathUrl.startsWith('/node_modules/')
+  ) {
+    return false;
+  }
+  // Skip file requests with extensions (e.g., .png, .js, .css, .ico, .json, .xml, .txt)
+  if (/\.[a-z0-9]{1,8}$/i.test(pathUrl)) {
+    return false;
+  }
+  return true;
+}
+
 // Start dev or production server
 async function startServer() {
   const isProd = process.env.NODE_ENV === 'production';
@@ -369,12 +418,49 @@ async function startServer() {
       },
       appType: 'spa'
     });
+
+    // Inject per-route SEO metadata & crawlable semantic HTML before Vite serves SPA shell
+    app.get('*', async (req, res, next) => {
+      if (!isHtmlPageNavigation(req)) {
+        return next();
+      }
+      const redirectTarget = getCanonicalRedirect(req, store.services);
+      if (redirectTarget) {
+        return res.redirect(301, redirectTarget);
+      }
+      try {
+        const templatePath = path.join(__dirname, 'index.html');
+        const rawTemplate = fs.readFileSync(templatePath, 'utf-8');
+        const seoResult = injectSeoIntoHtml(rawTemplate, req, store.services);
+        const transformedHtml = await vite.transformIndexHtml(req.originalUrl, seoResult.html);
+        if (seoResult.isPrivate) {
+          res.setHeader('X-Robots-Tag', 'noindex, nofollow, noarchive');
+        }
+        res.status(seoResult.statusCode).set({ 'Content-Type': 'text/html; charset=utf-8' }).end(transformedHtml);
+      } catch (err) {
+        next(err);
+      }
+    });
+
     app.use(vite.middlewares);
   } else {
     const distPath = path.join(__dirname, 'dist');
-    app.use(express.static(distPath));
-    app.get('*', (_req, res) => {
-      res.sendFile(path.join(distPath, 'index.html'));
+    app.use(express.static(distPath, { maxAge: '7d', index: false }));
+    app.get('*', (req, res) => {
+      if (!isHtmlPageNavigation(req)) {
+        return res.status(404).end();
+      }
+      const redirectTarget = getCanonicalRedirect(req, store.services);
+      if (redirectTarget) {
+        return res.redirect(301, redirectTarget);
+      }
+      const templatePath = path.join(distPath, 'index.html');
+      const rawTemplate = fs.readFileSync(templatePath, 'utf-8');
+      const seoResult = injectSeoIntoHtml(rawTemplate, req, store.services);
+      if (seoResult.isPrivate) {
+        res.setHeader('X-Robots-Tag', 'noindex, nofollow, noarchive');
+      }
+      res.status(seoResult.statusCode).set({ 'Content-Type': 'text/html; charset=utf-8' }).send(seoResult.html);
     });
   }
 

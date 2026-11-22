@@ -41,6 +41,50 @@ export interface ServiceItem {
   conditionsEn: string[];
   popular?: boolean;
   city?: 'shebin' | 'quesna' | 'menoufia';
+  slug?: string;
+  seoTitle?: string;
+  seoTitleEn?: string;
+  seoDescription?: string;
+  seoDescriptionEn?: string;
+  keywords?: string[];
+  officialFee?: number;
+  skipFee?: number;
+  officialSourceName?: string;
+  officialSourceNameEn?: string;
+  officialSourceUrl?: string;
+}
+
+export interface GuideArticle {
+  id: string;
+  slug: string;
+  title: string;
+  titleEn: string;
+  excerpt: string;
+  excerptEn: string;
+  categoryLabel: string;
+  categoryLabelEn: string;
+  publishedAt: string;
+  updatedAt: string;
+  readingTime: string;
+  readingTimeEn: string;
+  keywords: string[];
+  relatedServiceSlugs: string[];
+  officialSourceName: string;
+  officialSourceUrl: string;
+  sections: {
+    heading: string;
+    headingEn: string;
+    paragraphs: string[];
+    paragraphsEn: string[];
+    bullets?: string[];
+    bulletsEn?: string[];
+  }[];
+  faqs: {
+    question: string;
+    questionEn: string;
+    answer: string;
+    answerEn: string;
+  }[];
 }
 
 export type RequestStatus = 

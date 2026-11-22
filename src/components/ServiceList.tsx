@@ -36,6 +36,8 @@ import {
   ArrowLeft
 } from 'lucide-react';
 import { PAYMENTS_AND_ORDERS_ENABLED } from '../config/features';
+import { getServiceSlug } from '../data/seoMetadata';
+import { navigateTo } from '../seo/clientSeoSync';
 
 export const ServiceList: React.FC = () => {
   const { 
@@ -885,7 +887,16 @@ export const ServiceList: React.FC = () => {
                                   </span>
                                 </div>
                                 <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors line-clamp-2">
-                                  {language === 'ar' ? service.title : service.titleEn}
+                                  <a
+                                    href={`/services/${getServiceSlug(service)}`}
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      navigateTo(`/services/${getServiceSlug(service)}`);
+                                    }}
+                                    className="hover:underline"
+                                  >
+                                    {language === 'ar' ? service.title : service.titleEn}
+                                  </a>
                                 </h3>
                               </div>
                             </div>

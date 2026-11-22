@@ -15,9 +15,12 @@ import {
   Download,
   Share2,
   MessageSquare,
-  RotateCcw
+  RotateCcw,
+  ExternalLink
 } from 'lucide-react';
 import { PAYMENTS_AND_ORDERS_ENABLED } from '../config/features';
+import { getServiceSlug } from '../data/seoMetadata';
+import { navigateTo } from '../seo/clientSeoSync';
 
 export const ServiceDetailsModal: React.FC = () => {
   const { activeModal, closeModal, language, openModal } = useApp();
@@ -297,6 +300,18 @@ export const ServiceDetailsModal: React.FC = () => {
                 <MessageSquare className="w-3.5 h-3.5" />
                 <span>{language === 'ar' ? 'استفسار عن مستند' : 'Ask About Document'}</span>
               </button>
+              <a
+                href={`/services/${getServiceSlug(service)}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  closeModal();
+                  navigateTo(`/services/${getServiceSlug(service)}`);
+                }}
+                className="px-3.5 py-2.5 text-xs font-bold text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-xl transition-colors flex items-center justify-center gap-1.5"
+              >
+                <ExternalLink className="w-3.5 h-3.5 text-sky-500" />
+                <span>{language === 'ar' ? 'صفحة الدليل' : 'Full Page'}</span>
+              </a>
             </div>
 
             <button

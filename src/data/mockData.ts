@@ -137,6 +137,53 @@ export const SERVICES_DATA: ServiceItem[] = [
     conditionsEn: ['Address must match utility bill or first-degree relative guarantee']
   },
   {
+    id: 'gov-driving-license',
+    title: 'الأوراق المطلوبة لاستخراج وتجديد رخصة القيادة الخاصة - مرور شبين الكوم وقويسنا',
+    titleEn: 'Private Driving License Issuance & Renewal - Menoufia Traffic',
+    category: 'government',
+    city: 'menoufia',
+    icon: 'Car',
+    description: 'دليل استخراج رخصة القيادة الخاصة لأول مرة أو تجديدها بوحدة مرور شبين الكوم أو وحدة مرور قويسنا شاملاً الكشف الطبي والاختبارات.',
+    descriptionEn: 'Issue or renew a private driving license at Shebin El-Kom or Quesna Traffic Unit including medical checks and driving tests.',
+    responsibleEntity: 'وحدة مرور شبين الكوم / وحدة مرور قويسنا - إدارة مرور المنوفية',
+    responsibleEntityEn: 'Shebin El-Kom & Quesna Traffic Units - Menoufia',
+    fee: 1150,
+    estimatedDuration: 'نفس اليوم للتجديد · 1-3 أيام لأول مرة',
+    estimatedDurationEn: 'Same day (renewal) · 1-3 days (first-time)',
+    courierSupported: false,
+    digitalInstant: false,
+    popular: true,
+    requiredDocuments: [
+      { name: 'أصل بطاقة الرقم القومي سارية المفعول + صورتان ضوئيتان (محل الإقامة مطابق لوحدة المرور)', nameEn: 'Valid National ID + 2 copies matching traffic district', isMandatory: true },
+      { name: 'شهادتا الكشف الطبي (باطنة + نظر) معتمدتان من مستشفى حكومي أو بالمرور', nameEn: 'Approved Internal & Eye Medical Examination Certificates', isMandatory: true },
+      { name: 'أصل المؤهل الدراسي للاطلاع + صورة ضوئية (أو شهادة محو الأمية)', nameEn: 'Original Academic Qualification + copy', isMandatory: true },
+      { name: 'عدد 4 صور شخصية حديثة بخلفية بيضاء مقاس 4×6', nameEn: '4 recent 4x6 personal photos with white background', isMandatory: true },
+      { name: 'نموذج 256 مرور (ملف التقديم) وشهادة المخالفات عند التجديد', nameEn: 'Traffic Form 256 & clearance certificate for renewals', isMandatory: true }
+    ],
+    procedureSteps: [
+      'إجراء الكشف الطبي (باطنة ونظر وفصيلة دم) والحصول على الشهادتين المعتمدتين',
+      'التوجه لوحدة مرور شبين الكوم أو قويسنا حسب محل الإقامة بالبطاقة',
+      'شراء ملف التقديم ونموذج 256 مرور وتقديم أصول المستندات للمراجعة',
+      'اجتياز اختبار الإشارات النظري واختبار القيادة العملي (للاستخراج لأول مرة)',
+      'سداد الرسوم والضريبة المقررة بالخزينة واستلام رخصة القيادة المميكنة'
+    ],
+    procedureStepsEn: [
+      'Complete certified eye and internal medicine exams',
+      'Visit Shebin El-Kom or Quesna Traffic Unit matching your ID address',
+      'Purchase Form 256 and submit original dossier for verification',
+      'Pass theoretical signs exam and practical driving test (first-time)',
+      'Pay official traffic fees and collect machine-printed driving license'
+    ],
+    conditions: [
+      'ألا يقل سن المتقدم عن 18 عاماً ميلادياً عند التقديم لأول مرة',
+      'حضور صاحب الشأن شخصياً لإجراء الكشف والاختبار والتصوير بالوحدة'
+    ],
+    conditionsEn: [
+      'Applicant must be at least 18 years old for first-time issuance',
+      'In-person attendance required for medical verification and photo'
+    ]
+  },
+  {
     id: 'gov-vehicle-license',
     title: 'تجديد ترخيص سيارة ملاكي والفحص الفني - مرور شبين الكوم',
     titleEn: 'Vehicle License & Technical Inspection - Shebin El-Kom Traffic',

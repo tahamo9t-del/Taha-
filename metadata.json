@@ -1,8 +1,0 @@
-{
-  "name": "SKIP - منصة المعاملات والخدمات الذكية",
-  "description": "منصة SKIP الموحدة لإنجاز كافة الخدمات الحكومية، التعليمية، الصحية والإسكانية، مع خريطة تفاعلية، دفع إلكتروني مباشر، وخدمة المندوب المنزلي وتوصيل الأدوية.",
-  "requestFramePermissions": [],
-  "majorCapabilities": [
-    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
-  ]
-}
